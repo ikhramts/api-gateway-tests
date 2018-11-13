@@ -1,0 +1,160 @@
+import org.springframework.boot.gradle.tasks.run.BootRun
+
+buildscript {
+    ext {
+        kotlin_version = '1.3.0'
+        springBootVersion = '2.0.3.RELEASE'
+        springCloudVersion = 'Finchley.RELEASE'
+        
+        // Used by bootRunLocal task.
+        // Services should override this as necessary.
+        bootRunLocalPort = "8089"
+    }
+
+    repositories {
+        mavenCentral()
+
+        maven {
+            url "https://plugins.gradle.org/m2/"
+            maven { url "https://repo.spring.io/snapshot" }
+            maven { url "https://repo.spring.io/milestone" }
+        }
+    }
+
+    dependencies {
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version")
+        classpath("org.jetbrains.kotlin:kotlin-allopen:$kotlin_version")
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion")
+        classpath("io.spring.gradle:dependency-management-plugin:1.0.3.RELEASE")
+
+    }
+}
+
+def java8Projects() {
+    return subprojects.findAll { new File(it.projectDir, "build.gradle").exists() && !new File(it.projectDir, "package.json").exists()}
+}
+
+configure(java8Projects()) {
+    apply plugin: 'java'
+    apply plugin: 'kotlin'
+    apply plugin: 'idea'
+    apply plugin: 'kotlin-spring'
+    apply plugin: org.springframework.boot.gradle.plugin.SpringBootPlugin
+    apply plugin: io.spring.gradle.dependencymanagement.DependencyManagementPlugin
+
+    sourceSets {
+        main {
+            java {
+                srcDirs += 'src/main/java'
+            }
+            kotlin {
+                srcDirs += 'src/main/java'
+                srcDirs += 'src/main/kotlin'
+            }
+        }
+    }
+
+    repositories {
+        mavenCentral()
+        maven { url "https://repo.spring.io/snapshot" }
+        maven { url "https://repo.spring.io/milestone" }
+    }
+
+    dependencies {
+        compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+        compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+    }
+
+    dependencyManagement {
+        imports {
+            mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+        }
+    }
+
+    // Target JVM 1.8
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
+    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+        kotlinOptions {
+            jvmTarget = "1.8"
+            javaParameters = true
+        }
+    }
+
+    // Fix to "CreateProcess error=206, The filename or extension is too long" on Windows.
+    // By default, Spring task bootRun passes all classpath dependencies to java.exe in a command line argument.
+    // If there are too many dependencies, we get error "CreateProcess error=206, The filename or extension is too long".
+    // To get around that, we need to create a "Pathing JAR" that contains all classpath dependencies and
+    // reference that in the classpath argument.
+    // Taken from https://stackoverflow.com/questions/40037487/the-filename-or-extension-is-too-long-error-using-gradle
+    //
+    // This pathingJar task is referenced by bootRun/bootRunLocal tasks in use_spring_boot_X.gradle files.
+    task pathingJar(type: Jar) {
+        dependsOn configurations.runtime
+        appendix = 'pathing'
+
+        doFirst {
+            manifest {
+                attributes "Class-Path": configurations.runtime.files.collect {it.toURL().toString().replaceFirst("file:/", '/')}.join(" ")
+            }
+        }
+    }
+
+    // Run Spring services locally in "local" provile, avoid polluting the default profile.
+    task bootRunLocal(type: BootRun) {
+        group = "application"
+        dependsOn build
+        dependsOn pathingJar
+        doFirst() {
+            classpath = files(sourceSets.main.output.files, pathingJar.archivePath)
+            main = bootJar.mainClassName
+            systemProperty "spring.profiles.active", "local"
+            systemProperty "server.port", "$bootRunLocalPort"
+        }
+    }
+
+}
+
+//======================================================================
+
+// ext {
+
+//     includeWebfluxWebServiceDependencies = {
+
+//         dependencies {
+//             compile project(':shared:framework:core')
+
+//             compile('org.springframework.cloud:spring-cloud-starter-config')
+//             compile('org.springframework.boot:spring-boot-starter-webflux')
+//             compile('org.springframework.boot:spring-boot-starter-security')
+//             compile('org.springframework.boot:spring-boot-starter-actuator')
+//             testCompile('org.springframework.boot:spring-boot-starter-test')
+//             testCompile('io.projectreactor:reactor-test')
+//         }
+//     }
+
+//     includeWebServiceDependencies = {
+
+//         dependencies {
+//             compile project(':shared:auth:boot2-tomcat')
+//             compile project(':shared:framework:core')
+//             compile project(':shared:framework:web')
+
+//             compile('org.springframework.cloud:spring-cloud-starter-config')
+//             compile('org.springframework.boot:spring-boot-starter-web')
+//             compile('org.springframework.boot:spring-boot-starter-actuator')
+//             compile('org.springframework.boot:spring-boot-starter-security')
+
+//             testCompile('org.springframework.boot:spring-boot-starter-test')
+//             testCompile('io.projectreactor:reactor-test')
+//         }
+//     }
+
+// }
+
+
+
+
+
+
