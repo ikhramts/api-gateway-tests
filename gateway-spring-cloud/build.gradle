@@ -1,0 +1,7 @@
+dependencies {
+    compile "org.springframework.boot:spring-boot-starter-actuator"
+    compile "org.springframework.boot:spring-boot-starter-webflux"
+    compile "org.springframework.boot:spring-cloud-starter-gateway"
+    compile "org.springframework.boot:spring-cloud-starter-netflix-ribbon"
+    compile "org.isomorphism:token-bucket:1.7"
+}
