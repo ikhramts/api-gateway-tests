@@ -11,8 +11,8 @@ spring:
   cloud:
     gateway:
       routes:
-      - uri: https://google.ca/
+      - uri: http://localhost:8081/
         predicates:
-          - Path=/google/{segment}
+          - Path=/hello/{segment}
         filters:
           - SetPath=/{segment}

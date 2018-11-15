@@ -1,0 +1,16 @@
+ext {
+    bootRunLocalPort = "8081"
+}
+
+jar {
+    baseName = 'backend-service'
+    manifest {
+        attributes 'Main-Class': 'starter.backend.Application'
+    }
+}
+
+
+dependencies {
+    compile "org.springframework.boot:spring-boot-starter-actuator"
+    compile "org.springframework.boot:spring-boot-starter-web"
+}
