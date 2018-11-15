@@ -13,3 +13,15 @@ spring:
           - Path=/hello/{segment}
         filters:
           - SetPath=/{segment}
+
+---
+spring:
+  profiles: local
+
+server:
+  ssl:
+    enabled: true
+    key-alias: localhost_key
+    key-store-password:
+    key-store: classpath:localhost.p12
+    key-store-type: PKCS12
