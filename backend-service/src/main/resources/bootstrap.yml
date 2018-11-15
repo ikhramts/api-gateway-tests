@@ -1,15 +1,9 @@
+spring:
+  application:
+    name: hello
+
 # If you're using task bootRunLocal, the command line arguments in it
 # will supercede this. To see the port on which bootRunLocal will run
 # this service, go to this project's build.gradle.
 server:
   port: 8080
-
-spring:
-  cloud:
-    gateway:
-      routes:
-      - uri: http://localhost:8081/
-        predicates:
-          - Path=/hello/{segment}
-        filters:
-          - SetPath=/{segment}
