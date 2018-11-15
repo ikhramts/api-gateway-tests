@@ -2,4 +2,3 @@ rootProject.name = 'api-gateway-tests'
 
 include 'backend-service'
 include 'gateway-spring-cloud'
-include 'gateway-zuul2'
