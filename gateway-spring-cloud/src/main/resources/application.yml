@@ -18,6 +18,13 @@ spring:
 spring:
   profiles: local
 
+#  security:
+#    oauth2:
+#      client:
+#        provider:
+#          centrify:
+#            issuer-url:
+
 server:
   ssl:
     enabled: true

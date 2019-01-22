@@ -116,45 +116,6 @@ configure(java8Projects()) {
 
 }
 
-//======================================================================
-
-// ext {
-
-//     includeWebfluxWebServiceDependencies = {
-
-//         dependencies {
-//             compile project(':shared:framework:core')
-
-//             compile('org.springframework.cloud:spring-cloud-starter-config')
-//             compile('org.springframework.boot:spring-boot-starter-webflux')
-//             compile('org.springframework.boot:spring-boot-starter-security')
-//             compile('org.springframework.boot:spring-boot-starter-actuator')
-//             testCompile('org.springframework.boot:spring-boot-starter-test')
-//             testCompile('io.projectreactor:reactor-test')
-//         }
-//     }
-
-//     includeWebServiceDependencies = {
-
-//         dependencies {
-//             compile project(':shared:auth:boot2-tomcat')
-//             compile project(':shared:framework:core')
-//             compile project(':shared:framework:web')
-
-//             compile('org.springframework.cloud:spring-cloud-starter-config')
-//             compile('org.springframework.boot:spring-boot-starter-web')
-//             compile('org.springframework.boot:spring-boot-starter-actuator')
-//             compile('org.springframework.boot:spring-boot-starter-security')
-
-//             testCompile('org.springframework.boot:spring-boot-starter-test')
-//             testCompile('io.projectreactor:reactor-test')
-//         }
-//     }
-
-// }
-
-
-
 
 
 
